@@ -63,5 +63,8 @@
     <string name="action_settings">Frienso</string>
     <string name="com_parse_ui_phone_input_hint">Phone number</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="tracking_switch_off">Tracking off</string>
+    <string name="tracking_switch_on">Tracking On</string>
+    <string name="no_internet">No Internet connectivity</string>
 
 </resources>
