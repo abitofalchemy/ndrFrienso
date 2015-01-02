@@ -57,14 +57,31 @@
     <string name="com_parse_ui_login_warning_password_reset_failed">"Parse password reset failed, exception: "</string>
     <string name="com_parse_ui_login_dispatch_user_logged_in">"User logged in, starting: "</string>
     <string name="com_parse_ui_login_dispatch_user_not_logged_in">User not logged in, starting ParseLoginActivity</string>
+
     <string name="hello_world">hello world</string>
     <string name="app_name">Frienso</string>
+
+
     <string name="title_activity_splash">Frienso</string>
     <string name="action_settings">Frienso</string>
+
     <string name="com_parse_ui_phone_input_hint">Phone number</string>
-    <string name="title_activity_main">MainActivity</string>
+
+    <string name="title_activity_main">Frienso</string>
     <string name="tracking_switch_off">Tracking off</string>
     <string name="tracking_switch_on">Tracking On</string>
     <string name="no_internet">No Internet connectivity</string>
+    <string name="tracking_start_location">Tracking Start</string>
+    <string name="tracking_last_known_position">Last known position</string>
+
+
+
+    <string name="title_activity_friend_manipulator">Modify Friends</string>
+    <string name="inComingFriends">Friends you track</string>
+    <string name="outGoingFriends">Friends tracking you</string>
+    <string name="contactNameNotFound">User not in Contacts</string>
+    <string name="blockUser">Block the user</string>
+    <string name="photo_contact">Contact\'s Photo</string>
+    <string name="deleteUser">Remove Friend</string>
 
 </resources>

@@ -8,4 +8,11 @@ public class SingleLocationEvent {
     public double longitude;
     public int accuracyInM;
     public long timeStampInMillis;
+
+    SingleLocationEvent(double latitude, double longitude, int accuracy, long time){
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.accuracyInM = accuracy;
+        this.timeStampInMillis = time;
+    }
 }

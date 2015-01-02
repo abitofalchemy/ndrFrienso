@@ -1,8 +1,11 @@
 package com.frienso.helper;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.frienso.services.IncomingEventInfoRetrieval;
 import com.frienso.utils.DateTime;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -19,51 +22,36 @@ import java.util.List;
 public class EventHelper {
 
     public static ArrayList<ActiveIncomingEvent> sActiveIncomingEvents;
-    private static ArrayList<EventsUpdated> callBack = new ArrayList<EventsUpdated>();
     private final static String EVENT_TABLE = "UserEvent";
     private static Object SyncObject = new Object();
     private final static String LOG_TAG = "EVENT_HELPER";
+    private static Context sContext;
+    private static long sLastUpdateTimeInMillis = 0;
+    private final static long MIN_TIME_BETWEEN_FRIEND_RELOAD_MILLIS = 1 * 60 * 1000;
 
     private EventHelper() {
 
     }
 
-    public interface EventsUpdated {
-        void loadActiveEventsAgain();
+    public static void setContext(Context context) {
+        sContext = context;
     }
 
-    public static void registerUpdateCallBack(EventsUpdated eventsUpdated) {
-        if (callBack.contains(eventsUpdated))
-            return;
-        else
-            callBack.add(eventsUpdated);
-    }
 
-    public static void unregisterUpdateCallBack(EventsUpdated eventsUpdated) {
-        if (callBack.contains(eventsUpdated))
-            callBack.remove(eventsUpdated);
-        else
-            return;
-    }
 
-     /*this method should be called every time events change or modified */
 
-    private static void activeEventsChanged() {
-        //start a service to get all the latitude/longitude info
-        for (EventsUpdated cb : callBack){
-            cb.loadActiveEventsAgain();
-        }
-    }
+
 
     public static void refreshActiveEvents () {
         //get a list of incoming friends
         if (FriendsHelper.sFriendIncoming.size() == 0) {
             // no incoming friend
-            activeEventsChanged();
             return;
         }
-
-        new LoadEvents().execute();
+        if((System.currentTimeMillis() - sLastUpdateTimeInMillis) < MIN_TIME_BETWEEN_FRIEND_RELOAD_MILLIS)
+            return;
+        sLastUpdateTimeInMillis = System.currentTimeMillis();
+        loadActiveEvent();
     }
 
     private static void loadActiveEvent() {
@@ -75,11 +63,11 @@ public class EventHelper {
             List<ParseQuery<ParseObject>> lpq = new ArrayList<ParseQuery<ParseObject>>();
 
             //For each incoming friend create a query
-            for (FriendIncoming singleFriend : FriendsHelper.sFriendIncoming)
-            {
+            for (FriendIncoming singleFriend : FriendsHelper.sFriendIncoming) {
                 ParseQuery<ParseObject> pq = ParseQuery.getQuery(EVENT_TABLE);
                 pq.whereEqualTo("friensoUser", singleFriend.getParseUser());
                 Log.i(LOG_TAG, "friends searching for " + singleFriend.getParseUser());
+                //TODO: do we need the below check?
                 pq.whereLessThan("createdAt", currentTimeinISO);
                 //TODO: Enable this is in the prod version
                 //pq.whereEqualTo("eventActive","true");
@@ -89,7 +77,7 @@ public class EventHelper {
             //combine all the queries here and send only one request to Parse.
             ParseQuery<ParseObject> superQuery = ParseQuery.or(lpq);
             try {
-                pos =  superQuery.find();
+                pos = superQuery.find();
             } catch (ParseException e) {
                 e.printStackTrace();
                 sActiveIncomingEvents = null;
@@ -99,46 +87,53 @@ public class EventHelper {
             //now parse the returned result to create different Active Events that
             // can be later reused.
 
-            for (ParseObject po: pos) {
+            for (ParseObject po : pos) {
                 Log.i(LOG_TAG, "Event User found " + po.get("friensoUser"));
-                ParseUser pu = (ParseUser)po.get("friensoUser");
+                ParseUser pu = (ParseUser) po.get("friensoUser");
                 try {
                     //get the whole user object
                     pu.fetchIfNeeded();
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-                ActiveIncomingEvent av = new ActiveIncomingEvent(pu);
+
+                ActiveIncomingEvent av = new ActiveIncomingEvent(pu, (po.getCreatedAt()).getTime());
+                if (sActiveIncomingEvents == null) {
+                    sActiveIncomingEvents = new ArrayList<ActiveIncomingEvent>();
+                }
+                //check if av user already exists then ignore else add
+                boolean matchFound = false;
+                for (ActiveIncomingEvent ae : sActiveIncomingEvents) {
+                    if (ae.sameUser(pu))
+                        matchFound = true;
+                }
+                if (!matchFound) {
+                    sActiveIncomingEvents.add(av);
+                }
+
             }
 
-
-
+        }
+        Log.i(LOG_TAG," sActiveIncoming Event Size " + sActiveIncomingEvents.size()  );
+        if(sActiveIncomingEvents !=null && sActiveIncomingEvents.size() != 0){
+            //start Service
+            startEventService();
+        }else {
+            stopEventService();
         }
     }
 
 
-    public static void startMyEvent () {
-        //check if there is an event already Active.. in that case ignore this
+    public static void startEventService () {
+        Log.i(LOG_TAG,"Event Service Started");
+        IncomingEventInfoRetrieval.stopService = false;
+        //TODO: check if there is an event already Active.. in that case ignore this
+        sContext.startService(new Intent(sContext, IncomingEventInfoRetrieval.class));
+
     }
 
-    public static void stopMyEvent () {
-
+    public static void stopEventService () {
+        IncomingEventInfoRetrieval.stopService = true;
     }
-
-    private static class LoadEvents extends AsyncTask<Void,Void,Void> {
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            loadActiveEvent();
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            activeEventsChanged();
-        }
-    }
-
 
 }

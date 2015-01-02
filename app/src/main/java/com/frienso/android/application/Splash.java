@@ -9,27 +9,37 @@ import android.util.Log;
 import android.view.Window;
 
 import com.parse.Parse;
+import com.parse.ParseCrashReporting;
 import com.parse.ParseUser;
 import com.parse.ui.ParseLoginBuilder;
 
 
+
 public class Splash extends Activity {
 
+    private static final String LOGTAG = "SplashActivity";
     private final int LOGIN_ACTIVITY = 1;
     private final int MAIN_ACTIVITY = 2;
 
     private final int SPLASH_DISPLAY_LENGTH = 1000;
     private Context mContext;
+    public final static String PARSE_APPLICATION_ID = "ocxutehzKxd4EvmeODaNDl8AwJPYajzTK06QYkzZ";
+    public final static String PARSE_CLIENT_KEY = "G70qPOHHCFiUFUwBqbUJvqb2Fel8BrxcjBjntQEc";
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mContext = this;
+        //TODO: Enable Crash Reporting
+        ParseCrashReporting.enable(mContext);
+        Parse.initialize(mContext, PARSE_APPLICATION_ID, PARSE_CLIENT_KEY);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_splash);
-        mContext = this;
+
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                Parse.initialize(mContext, "ocxutehzKxd4EvmeODaNDl8AwJPYajzTK06QYkzZ", "G70qPOHHCFiUFUwBqbUJvqb2Fel8BrxcjBjntQEc");
                 ParseUser currentUser = ParseUser.getCurrentUser();
                 if (currentUser != null) {
                     startMainActivity();
@@ -54,7 +64,7 @@ public class Splash extends Activity {
         if (requestCode == LOGIN_ACTIVITY) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
-                Log.i("udayan", "Login results successful, start the main activity");
+                Log.i(LOGTAG, "Login results successful, start the main activity");
             } else {
                 finish();
             }

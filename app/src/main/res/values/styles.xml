@@ -35,4 +35,13 @@
     <style name="ParseLoginUI.EditText" parent="@android:style/Widget.EditText">
         <item name="android:singleLine">true</item>
     </style>
+    <style name="friend_manipulator_text_label">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:layout_gravity">left</item>
+        <item name="android:paddingTop">15dp</item>
+        <item name="android:paddingLeft">20dp</item>
+    </style>
+
 </resources>

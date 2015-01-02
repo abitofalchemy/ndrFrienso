@@ -28,9 +28,11 @@ public class FriendsHelper {
 
     static ArrayList<FriendsUpdated> callBack = new ArrayList<FriendsUpdated>();
     static long lastUpdateTimeInMS  =  0;
-    final static long minTimeBetweenFriendReloadInMS = 60;
+    final static long minTimeBetweenFriendReloadInMS = 1  * 60 * 1000;
 
     private final static String LOG_TAG = "FriendsHelper";
+
+
 
     /* Those who need info when friends get updated should implement
        this interface and register for callback
@@ -44,31 +46,13 @@ public class FriendsHelper {
      public static void refreshFriends(){
          if((System.currentTimeMillis() - lastUpdateTimeInMS) < minTimeBetweenFriendReloadInMS)
              return;
-           new LoadFriends().execute();
+         Log.i(LOG_TAG, "Refreshing friends starting now");
+         sFriendIncoming = loadIncomingFriends();
+         sFriendOutgoing = loadOutgoingFriends();
+         lastUpdateTimeInMS = System.currentTimeMillis();
+     }
 
-    }
 
-    public static void registerUpdateCallBack(FriendsUpdated friendsUpdated) {
-        if (callBack.contains(friendsUpdated))
-            return;
-        else
-            callBack.add(friendsUpdated);
-    }
-
-    public static void unregisterUpdateCallBack(FriendsUpdated friendsUpdated) {
-        if (callBack.contains(friendsUpdated))
-            callBack.remove(friendsUpdated);
-        else
-            return;
-    }
-
-    /*this method should be called everytime friends list is changed or modified */
-
-    private static void friendsChanged() {
-        for (FriendsUpdated cb : callBack){
-            cb.loadFriendsAgain();
-        }
-    }
 
     private FriendsHelper() {
 
@@ -80,29 +64,37 @@ public class FriendsHelper {
         boolean result = fo.addFriendOnParse();
         if(result){
             sFriendOutgoing.add(fo);
-            friendsChanged();
         }
 
         return result;
     }
 
     public static boolean deleteFriend(FriendOutgoing fo) {
-        boolean result = fo.delete();
-        if(result)
-            friendsChanged();
-        return result;
+         return fo.delete();
+    }
+
+    public static boolean deleteFriend(String phoneNumber) {
+        for (FriendOutgoing fo: sFriendOutgoing){
+            if(fo.getNumber().compareTo(phoneNumber) ==0)
+                return fo.delete();
+        }
+        return false;
     }
 
     /*disallow a user from sending any more updates in the future*/
 
     public static boolean blockFriend(FriendIncoming fi) {
-        boolean result = fi.block();
-        if(result)
-            friendsChanged();
-        return result;
+       return fi.block();
     }
 
-
+    public static boolean blockFriend(String phoneNumber) {
+        for (FriendIncoming fi: sFriendIncoming){
+            if(fi.getNumber().compareTo(phoneNumber)==0){
+                return blockFriend(fi);
+            }
+        }
+        return false;
+    }
 
 
     private static ArrayList<FriendOutgoing> loadOutgoingFriends(){
@@ -238,25 +230,4 @@ public class FriendsHelper {
         }
 
     }
-
-        private static class LoadFriends extends AsyncTask<Void,Void,Void> {
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            sFriendIncoming = loadIncomingFriends();
-            sFriendOutgoing = loadOutgoingFriends();
-            //loadFriends();
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            lastUpdateTimeInMS = System.currentTimeMillis();
-            super.onPostExecute(aVoid);
-            friendsChanged();
-        }
-    }
-
-
-
 }
