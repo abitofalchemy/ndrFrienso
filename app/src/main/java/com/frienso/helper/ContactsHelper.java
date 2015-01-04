@@ -20,19 +20,26 @@ public class ContactsHelper {
 
     private final static String LOG_TAG = "ContactsHelper";
 
-    public static String getContactName(Context context, String phoneNumber) {
+    public static void getContactName(Context context, Friend friend) {
+        String phoneNumber = friend.getNumber();
+        if (phoneNumber == null) {
+            return;
+        }
         ContentResolver cr = context.getContentResolver();
         Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phoneNumber));
         Cursor cursor = cr.query(uri, projection, null, null, null);
         if (cursor == null) {
             Log.e(LOG_TAG,"Cursor is null");
-            return null;
+            return;
         }
         String contactName = null;
-        String photoUri;
+        String photoUri = null ;
         if(cursor.moveToFirst()) {
             contactName = cursor.getString(cursor.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME));
             photoUri = cursor.getString(cursor.getColumnIndex(ContactsContract.PhoneLookup.PHOTO_THUMBNAIL_URI));
+            //set the links back to the friend object.
+            friend.setContactPicURI(photoUri);
+            friend.setFName(contactName);
 
             Log.v(LOG_TAG, "Started uploadcontactphoto: Contact Found @ " + contactName);
             Log.v(LOG_TAG, "Started uploadcontactphoto: Contact Found @ " + phoneNumber);
@@ -43,7 +50,5 @@ public class ContactsHelper {
         if(cursor != null && !cursor.isClosed()) {
             cursor.close();
         }
-
-        return contactName;
     }
 }

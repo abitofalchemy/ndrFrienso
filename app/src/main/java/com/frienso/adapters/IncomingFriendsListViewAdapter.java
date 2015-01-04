@@ -1,6 +1,7 @@
 package com.frienso.adapters;
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,10 +34,15 @@ public class IncomingFriendsListViewAdapter extends ArrayAdapter<FriendIncoming>
         View rowView = inflater.inflate(R.layout.in_friend_list_layout, parent, false);
         TextView firstLine = (TextView) rowView.findViewById(R.id.inFriendFirstLine);
         TextView secondLine = (TextView) rowView.findViewById(R.id.inFriendSecondLine);
+        ImageView imageView = (ImageView) rowView.findViewById(R.id.inFriendPhotoIcon);
+
         firstLine.setText(values[position].getFullName(mContext));
         secondLine.setText(values[position].getNumber());
-        //TODO: Contacts should not be read here. move this to somewhere else
-        ContactsHelper.getContactName(mContext,values[position].getNumber());
+
+        String imageUri = values[position].getPicURI();
+        if(imageUri != null) {
+            imageView.setImageURI(Uri.parse(imageUri));
+        }
         ImageView blockIcon = (ImageView) rowView.findViewById(R.id.inFriendBlockIcon);
         blockIcon.setOnClickListener(mBlockUserListener);
         return rowView;

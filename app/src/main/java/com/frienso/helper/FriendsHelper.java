@@ -1,5 +1,6 @@
 package com.frienso.helper;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -43,12 +44,15 @@ public class FriendsHelper {
     /* refreshFriends should be called anytime we want to update the
        friends list
      */
-     public static void refreshFriends(){
+     public static void refreshFriends(Context context){
          if((System.currentTimeMillis() - lastUpdateTimeInMS) < minTimeBetweenFriendReloadInMS)
              return;
          Log.i(LOG_TAG, "Refreshing friends starting now");
          sFriendIncoming = loadIncomingFriends();
          sFriendOutgoing = loadOutgoingFriends();
+
+         //TODO: load from contacts only when the received contacts are different. Currently we load contacts everytime we refresh.
+         loadInfoFromContacts(context);
          lastUpdateTimeInMS = System.currentTimeMillis();
      }
 
@@ -229,5 +233,16 @@ public class FriendsHelper {
             sFriendIncoming = fil;
         }
 
+    }
+
+    public static void loadInfoFromContacts(Context mContext) {
+        //Load info from contacts here
+        for (Friend fi : sFriendIncoming){
+            fi.loadContactInfo(mContext);
+        }
+
+        for (Friend fo : sFriendOutgoing){
+            fo.loadContactInfo(mContext);
+        }
     }
 }

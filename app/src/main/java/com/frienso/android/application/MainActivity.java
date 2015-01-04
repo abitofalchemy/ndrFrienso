@@ -37,13 +37,14 @@ import java.util.ArrayList;
 
 public class MainActivity extends Activity implements  OnMapReadyCallback {
 
-    private static final int HANDLER_FRIENDS_REFRESHED = 1;
+    private final static int HANDLER_FRIENDS_REFRESHED = 1;
     private final static String SELECT_TEXT = "Select";
     private final static String EMPTY_TEXT = "";
     private final static String CHANGE_FRIENDS = "+/- Friends";
     private final static String LOADING_FRIENDS = "Loading";
     private final static int REFRESH_DATA_IN_MILLIS = 1 * 60 * 1000;
     private final static int REFRESH_MENU_CHECK_IN_MILLIS =  5 * 1000;
+
 
     private boolean mIsMapReady = false;
     private GoogleMap mGoogleMap;
@@ -272,7 +273,7 @@ public class MainActivity extends Activity implements  OnMapReadyCallback {
         public void run() {
             Log.i(LOGTAG, "Run" + android.os.Process.getThreadPriority(android.os.Process.myTid()));
 
-            FriendsHelper.refreshFriends();
+            FriendsHelper.refreshFriends(mContext);
             //now update the events since we have the friend information
             EventHelper.refreshActiveEvents();
             mHandler.postDelayed(mRefresh,REFRESH_DATA_IN_MILLIS);

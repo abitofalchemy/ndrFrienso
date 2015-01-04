@@ -1,6 +1,7 @@
 package com.frienso.adapters;
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,8 @@ import com.frienso.android.application.R;
 import com.frienso.helper.FriendIncoming;
 import com.frienso.helper.FriendOutgoing;
 import com.frienso.helper.FriendsHelper;
+
+import java.net.URI;
 
 /**
  * Created by Udayan Kumar on 12/20/14.
@@ -35,9 +38,14 @@ public class OutgoingFriendsListViewAdapter extends ArrayAdapter<FriendOutgoing>
         View rowView = inflater.inflate(R.layout.out_friend_list_layout, parent, false);
         TextView firstLine = (TextView) rowView.findViewById(R.id.outFriendFirstLine);
         TextView secondLine = (TextView) rowView.findViewById(R.id.outFriendSecondLine);
+        ImageView imageView = (ImageView) rowView.findViewById(R.id.outFriendPhotoIcon);
+
         firstLine.setText(values[position].getFullName(mContext));
         secondLine.setText(values[position].getNumber());
-
+        String imageUri = values[position].getPicURI();
+        if(imageUri != null) {
+            imageView.setImageURI(Uri.parse(imageUri));
+        }
         ImageView removeIcon = (ImageView) rowView.findViewById(R.id.outFriendRemoveIcon);
         removeIcon.setOnClickListener(mBlockUserListener);
         removeIcon.setTag(secondLine);
