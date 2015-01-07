@@ -1,11 +1,6 @@
 package com.frienso.helper;
 
-import android.content.Context;
-
-import com.frienso.android.application.R;
 import com.parse.ParseUser;
-
-import java.util.ArrayList;
 
 /**
  * Created by udayan kumar on 11/12/14.
@@ -13,16 +8,27 @@ import java.util.ArrayList;
 public class FriendOutgoing extends Friend{
 
     private boolean isOnParse = false;
+    private boolean isDummy = true;
 
     public FriendOutgoing(ParseUser pu, String phoneNumber, String lname, String fname) {
         super(pu,phoneNumber, lname, fname);
+        isDummy = false;
     }
 
     public FriendOutgoing(ParseUser pu, String phoneNumber, String lname, String fname, boolean isOnParse) {
         super(pu,phoneNumber, lname, fname);
         this.isOnParse =isOnParse;
+        isDummy = false;
     }
 
+    public FriendOutgoing() {
+        super();
+        isDummy = true;
+    }
+
+    public boolean isDummy () {
+        return  isDummy;
+    }
 
     public static boolean addFriendOnParse() {
         //TODO: Implement this

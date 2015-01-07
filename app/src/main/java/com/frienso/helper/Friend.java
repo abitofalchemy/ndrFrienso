@@ -22,7 +22,13 @@ public abstract class Friend {
         this.pu = pu;
         contactPicURI = null;
     }
-
+    public Friend () {
+        this.lname = null;
+        this.fname = null;
+        this.phoneNumber = null;
+        this.pu = null;
+        contactPicURI = null;
+    }
     public void setContactPicURI(String picURI){
         this.contactPicURI = picURI;
     }

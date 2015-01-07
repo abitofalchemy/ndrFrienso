@@ -84,4 +84,22 @@
     <string name="photo_contact">Contact\'s Photo</string>
     <string name="deleteUser">Remove Friend</string>
 
+    <string name="modifyFriendsAlertDialogTitle">Select an action</string>
+    <string name="cancelFriendModification">Cancel</string>
+    <string name="longPressHint">Press and hold the row to make changes</string>
+    <string name="pressRowToAddFriend">Press and Hold Row to add a friend</string>
+    <string-array name="inFriendOperations">
+        <item>Block</item>
+        <item>Unblock</item>
+    </string-array>
+
+    <string-array name="outFriendOperations">
+        <item>Remove</item>
+        <item>Replace</item>
+    </string-array>
+
+    <string-array name="onlyAddFriendOperation">
+        <item>Add</item>
+    </string-array>
+
 </resources>

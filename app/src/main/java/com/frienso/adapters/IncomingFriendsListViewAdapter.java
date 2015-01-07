@@ -10,9 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.frienso.android.application.R;
-import com.frienso.helper.ContactsHelper;
 import com.frienso.helper.FriendIncoming;
-import com.frienso.helper.FriendsHelper;
 
 /**
  * Created by Udayan Kumar on 12/20/14.
@@ -43,20 +41,9 @@ public class IncomingFriendsListViewAdapter extends ArrayAdapter<FriendIncoming>
         if(imageUri != null) {
             imageView.setImageURI(Uri.parse(imageUri));
         }
-        ImageView blockIcon = (ImageView) rowView.findViewById(R.id.inFriendBlockIcon);
-        blockIcon.setOnClickListener(mBlockUserListener);
         return rowView;
     }
 
 
-    View.OnClickListener mBlockUserListener = new View.OnClickListener(){
 
-        @Override
-        public void onClick(View v) {
-
-            TextView secondLine = (TextView) v.findViewById(R.id.inFriendSecondLine);
-            String phoneNumber = secondLine.getText().toString();
-            FriendsHelper.blockFriend(phoneNumber);
-        }
-    };
 }

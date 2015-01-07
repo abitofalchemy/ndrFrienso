@@ -1,26 +1,66 @@
 package com.frienso.android.application;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.frienso.adapters.IncomingFriendsListViewAdapter;
 import com.frienso.adapters.OutgoingFriendsListViewAdapter;
-import com.frienso.android.application.R;
 import com.frienso.helper.FriendIncoming;
 import com.frienso.helper.FriendOutgoing;
 import com.frienso.helper.FriendsHelper;
 
-import java.util.ArrayList;
+
 
 public class FriendManipulator extends Activity {
+    private static final String LOG_TAG = "FriendManipulator";
+    Context mContext;
+    FriendOutgoing[] arrayOfFriends;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.friend_manipulator);
+        this.mContext = this;
+        int numFriendsOutGoing = this.getResources().getInteger(R.integer.numberOutgoingFriends);
+
+        //outGoingFriends
+        // friends we want to support
+
+        arrayOfFriends = (FriendsHelper.sFriendOutgoing).toArray(new FriendOutgoing[numFriendsOutGoing]);
+        if(FriendsHelper.sFriendOutgoing.size() != numFriendsOutGoing) {
+            //create dummy friends
+            for (int i = FriendsHelper.sFriendOutgoing.size(); i< numFriendsOutGoing; i ++) {
+                arrayOfFriends[i] = new FriendOutgoing();
+            }
+        }
+
+        OutgoingFriendsListViewAdapter outgoingAdapter = new OutgoingFriendsListViewAdapter(this,arrayOfFriends);
+        ListView outgoingList = (ListView) findViewById(R.id.listViewOutFriends);
+        outgoingList.setAdapter(outgoingAdapter);
+        outgoingList.setLongClickable(true);
+        outgoingList.setOnItemLongClickListener(mOutgoingLongClickViewListener);
+
+
+        //incoming Friends
+        IncomingFriendsListViewAdapter incomingAdapter = new IncomingFriendsListViewAdapter(this,
+                (FriendsHelper.sFriendIncoming).toArray(new FriendIncoming[FriendsHelper.sFriendIncoming.size()]));
+        ListView incomingList = (ListView) findViewById(R.id.listViewInFriends);
+        incomingList.setAdapter(incomingAdapter);
+        incomingList.setOnItemLongClickListener(mIncomingLongClickViewListener);
+
+
+        Toast.makeText(this,R.string.longPressHint,Toast.LENGTH_LONG).show();
+
     }
 
 
@@ -28,22 +68,7 @@ public class FriendManipulator extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_friend_manipulator, menu);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-
-        //incoming Friends
-        IncomingFriendsListViewAdapter incomingAdapter = new IncomingFriendsListViewAdapter(this,
-                (FriendsHelper.sFriendIncoming).toArray(new FriendIncoming[FriendsHelper.sFriendIncoming.size()]));
-        ListView incomingList = (ListView) findViewById(R.id.listViewInFriends);
-        incomingList.setAdapter(incomingAdapter);
-
-        //outGoingFriends
-        //TODO: make sure the Adapter has atleast 3 elements. This is equal to the number of tracking
-        // friends we want to support
-        OutgoingFriendsListViewAdapter outgoingAdapter = new OutgoingFriendsListViewAdapter(this,
-                (FriendsHelper.sFriendOutgoing).toArray(new FriendOutgoing[FriendsHelper.sFriendOutgoing.size()]));
-        ListView outgoingList = (ListView) findViewById(R.id.listViewOutFriends);
-        outgoingList.setAdapter(outgoingAdapter);
-
+        getActionBar().setDisplayHomeAsUpEnabled(true);       
         return true;
     }
 
@@ -61,4 +86,68 @@ public class FriendManipulator extends Activity {
 
         return super.onOptionsItemSelected(item);
     }
+
+
+
+    AdapterView.OnItemLongClickListener mIncomingLongClickViewListener = new AdapterView.OnItemLongClickListener() {
+
+        @Override
+        public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+            builder.setTitle(R.string.modifyFriendsAlertDialogTitle);
+
+            builder.setItems(R.array.inFriendOperations, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Log.i(LOG_TAG, " Option " + which + "Clicked " + mContext.getResources().getStringArray(R.array.inFriendOperations));
+                }
+            });
+
+            builder.setNegativeButton(R.string.cancelFriendModification, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Log.i(LOG_TAG, "Friend Modification operation cancelled");
+
+                }
+            });
+            builder.show();
+            return false;
+        }
+    };
+
+
+    AdapterView.OnItemLongClickListener mOutgoingLongClickViewListener = new AdapterView.OnItemLongClickListener() {
+
+        @Override
+        public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+            builder.setTitle(R.string.modifyFriendsAlertDialogTitle);
+
+
+            int optionArray;
+            // if this is a dummy place holder
+            if (arrayOfFriends[position].isDummy()){
+                optionArray = R.array.onlyAddFriendOperation;
+
+            } else {
+                optionArray = R.array.outFriendOperations;
+            }
+            builder.setItems(optionArray, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Log.i(LOG_TAG, " Option " + which + "Clicked " + R.array.outFriendOperations);
+                }
+            });
+
+            builder.setNegativeButton(R.string.cancelFriendModification, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Log.i(LOG_TAG, "Friend Modification operation cancelled");
+
+                }
+            });
+            builder.show();
+            return false;
+        }
+    };
 }

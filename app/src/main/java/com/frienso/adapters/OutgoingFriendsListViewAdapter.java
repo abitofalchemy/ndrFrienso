@@ -2,7 +2,6 @@ package com.frienso.adapters;
 
 import android.content.Context;
 import android.net.Uri;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,11 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.frienso.android.application.R;
-import com.frienso.helper.FriendIncoming;
 import com.frienso.helper.FriendOutgoing;
-import com.frienso.helper.FriendsHelper;
-
-import java.net.URI;
 
 /**
  * Created by Udayan Kumar on 12/20/14.
@@ -30,6 +25,9 @@ public class OutgoingFriendsListViewAdapter extends ArrayAdapter<FriendOutgoing>
         super(context,R.layout.in_friend_list_layout, values);
         this.mContext = context;
         this.values = values;
+
+
+
     }
 
     @Override
@@ -40,26 +38,20 @@ public class OutgoingFriendsListViewAdapter extends ArrayAdapter<FriendOutgoing>
         TextView secondLine = (TextView) rowView.findViewById(R.id.outFriendSecondLine);
         ImageView imageView = (ImageView) rowView.findViewById(R.id.outFriendPhotoIcon);
 
-        firstLine.setText(values[position].getFullName(mContext));
-        secondLine.setText(values[position].getNumber());
-        String imageUri = values[position].getPicURI();
-        if(imageUri != null) {
-            imageView.setImageURI(Uri.parse(imageUri));
+        //if the friend is dummy placeholder
+        if (values[position].isDummy()) {
+            firstLine.setText(mContext.getResources().getString(R.string.pressRowToAddFriend));
+            secondLine.setText("");
+        } else {
+            firstLine.setText(values[position].getFullName(mContext));
+            secondLine.setText(values[position].getNumber());
+            String imageUri = values[position].getPicURI();
+            if (imageUri != null) {
+                imageView.setImageURI(Uri.parse(imageUri));
+            }
         }
-        ImageView removeIcon = (ImageView) rowView.findViewById(R.id.outFriendRemoveIcon);
-        removeIcon.setOnClickListener(mBlockUserListener);
-        removeIcon.setTag(secondLine);
         return rowView;
     }
 
 
-    View.OnClickListener mBlockUserListener = new View.OnClickListener(){
-
-        @Override
-        public void onClick(View v) {
-            TextView secondLine = (TextView) v.getTag();
-            String phoneNumber = secondLine.getText().toString();
-            FriendsHelper.deleteFriend(phoneNumber);
-        }
-    };
 }
