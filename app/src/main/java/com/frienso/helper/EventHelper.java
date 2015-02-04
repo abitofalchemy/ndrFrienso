@@ -2,17 +2,16 @@ package com.frienso.helper;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.util.Log;
 
 import com.frienso.services.IncomingEventInfoRetrieval;
 import com.frienso.utils.DateTime;
+import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +22,10 @@ public class EventHelper {
 
     public static ArrayList<ActiveIncomingEvent> sActiveIncomingEvents;
     private final static String EVENT_TABLE = "UserEvent";
+    private final static String PARSE_EVENT_TABLE_ACTIVE_EVENT = "eventActive";
+    private final static String PARSE_EVENT_TABLE_FRIENSO_USER = "friensoUser";
+    private final static String PARSE_EVENT_TABLE_EVENT_TYPE = "eventType";
+    private static final String PARSE_EVENT_TABLE_EVENT_TYPE_WATCHME = "watchMe" ;
     private static Object SyncObject = new Object();
     private final static String LOG_TAG = "EVENT_HELPER";
     private static Context sContext;
@@ -135,5 +138,33 @@ public class EventHelper {
     public static void stopEventService () {
         IncomingEventInfoRetrieval.stopService = true;
     }
+    public static void tellParseAlertIsOn () {
+        //TODO: check if there is an existing event that is ON for this user. cancel it
+        //Start a new event
+        ParseObject po = new ParseObject(EVENT_TABLE);
+        po.put(PARSE_EVENT_TABLE_FRIENSO_USER,ParseUser.getCurrentUser());
+        po.put(PARSE_EVENT_TABLE_EVENT_TYPE,PARSE_EVENT_TABLE_EVENT_TYPE_WATCHME);
+        po.put(PARSE_EVENT_TABLE_ACTIVE_EVENT,true);
+        po.saveInBackground();
+    }
 
+
+    public static void tellParseAlertIsOff () {
+
+        ParseQuery<ParseObject> pq = ParseQuery.getQuery(EVENT_TABLE);
+        pq.whereEqualTo(PARSE_EVENT_TABLE_FRIENSO_USER, ParseUser.getCurrentUser());
+        pq.whereEqualTo(PARSE_EVENT_TABLE_ACTIVE_EVENT,true);
+        pq.whereEqualTo(PARSE_EVENT_TABLE_EVENT_TYPE,PARSE_EVENT_TABLE_EVENT_TYPE_WATCHME);
+        pq.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> parseObjects, ParseException e) {
+                //TODO:HANDLE Parse exceptions. may be create a class to handle all the errors
+                for (ParseObject po : parseObjects) {
+                    po.put(PARSE_EVENT_TABLE_ACTIVE_EVENT, false);
+                    po.saveInBackground();
+                }
+            }
+        });
+
+    }
 }

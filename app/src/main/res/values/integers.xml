@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <integer name="numberOutgoingFriends">3</integer>
+    <integer name="minTimeBetweenLocUpdatesInMillis">30000</integer>
+    <integer name="minDistBetweenLocUpdatesInM">25</integer>
 </resources>

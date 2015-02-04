@@ -8,8 +8,6 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.Window;
 
-import com.parse.Parse;
-import com.parse.ParseCrashReporting;
 import com.parse.ParseUser;
 import com.parse.ui.ParseLoginBuilder;
 
@@ -32,8 +30,7 @@ public class Splash extends Activity {
         super.onCreate(savedInstanceState);
         mContext = this;
         //TODO: Enable Crash Reporting
-        ParseCrashReporting.enable(mContext);
-        Parse.initialize(mContext, PARSE_APPLICATION_ID, PARSE_CLIENT_KEY);
+       // Parse.initialize(mContext, PARSE_APPLICATION_ID, PARSE_CLIENT_KEY);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_splash);
 

@@ -2,13 +2,18 @@ package com.frienso.android.application;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.util.Log;
 import android.view.Menu;
@@ -16,23 +21,22 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
 
-import com.frienso.android.application.R;
 import com.frienso.helper.EventHelper;
 import com.frienso.helper.FriendIncoming;
 import com.frienso.helper.FriendsHelper;
+import com.frienso.helper.LocationHelper;
 import com.frienso.helper.MapHelper;
+import com.frienso.receivers.MyAlarmManager;
 import com.frienso.utils.Network;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 
-
-
-import java.text.ParseException;
 import java.util.ArrayList;
 
 public class MainActivity extends Activity implements  OnMapReadyCallback {
@@ -44,6 +48,8 @@ public class MainActivity extends Activity implements  OnMapReadyCallback {
     private final static String LOADING_FRIENDS = "Loading";
     private final static int REFRESH_DATA_IN_MILLIS = 1 * 60 * 1000;
     private final static int REFRESH_MENU_CHECK_IN_MILLIS =  5 * 1000;
+    private final static int TRACKING_ALERT_NOTIFICATION_ID = 1;
+
 
 
     private boolean mIsMapReady = false;
@@ -51,7 +57,9 @@ public class MainActivity extends Activity implements  OnMapReadyCallback {
     private String mUserOnMap;
     private Context mContext;
     private android.os.Handler mHandler;
+    private MyAlarmManager mMyAlarmManager;
     Menu mMenu;
+    private NotificationManager mNotificationManager;
 
 
     private final String LOGTAG = "MainActivity";
@@ -90,13 +98,13 @@ public class MainActivity extends Activity implements  OnMapReadyCallback {
             Toast.makeText(mContext,R.string.no_internet,Toast.LENGTH_LONG).show();
             return;
         }
-
-
         //following this https://developers.google.com/maps/documentation/android/map
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        mMyAlarmManager = new MyAlarmManager(mContext);
+        mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
     }
 
@@ -115,6 +123,11 @@ public class MainActivity extends Activity implements  OnMapReadyCallback {
         Switch aswitch = (Switch) MenuItemCompat.getActionView(item);
         aswitch.setTextOff(getString(R.string.tracking_switch_off));
         aswitch.setTextOn(getString(R.string.tracking_switch_on));
+        //if the alarm is set, move the switch to on position
+        if(mMyAlarmManager.isAlarmSet()){
+            aswitch.setChecked(true);
+        }
+        aswitch.setOnCheckedChangeListener(mAlertButtonChangedListerner);
 
 
         //To setup spinner use this stackoverflow answer by francois
@@ -126,6 +139,108 @@ public class MainActivity extends Activity implements  OnMapReadyCallback {
         return true;
     }
 
+    CompoundButton.OnCheckedChangeListener mAlertButtonChangedListerner = new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            if (isChecked) {
+                //user has started the tracking activity
+                startAlert();
+            }else {
+                //user has turned off tracking
+                stopAlert();
+            }
+        }
+    };
+
+    private void stopAlert() {
+
+        if (mMyAlarmManager != null) {
+            mMyAlarmManager.cancelAlarm();
+        }
+
+        //remove notification
+        clearOnGoingAlertNotification();
+        //turn off event in parse
+        EventHelper.tellParseAlertIsOff();
+
+    }
+
+
+    private void clearOnGoingAlertNotification() {
+        mNotificationManager.cancel(TRACKING_ALERT_NOTIFICATION_ID);
+
+    }
+
+    private void setOnGoingAlertNotification() {
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.drawable.frienso_icon)
+                        .setContentTitle(getString(R.string.notification_alert_on))
+                        .setContentText(getString(R.string.notification_text))
+                        .setOngoing(true);
+        // Creates an explicit intent for an Activity in your app
+        Intent resultIntent = new Intent(this, MainActivity.class);
+
+
+        PendingIntent resultPendingIntent =
+                PendingIntent.getActivity(mContext, 0, resultIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT);
+        mBuilder.setContentIntent(resultPendingIntent);
+
+        // TRACKING_ALERT_NOTIFICATION_ID allows you to update the notification later on.
+        mNotificationManager.notify(TRACKING_ALERT_NOTIFICATION_ID, mBuilder.build());
+    }
+
+    private void startAlert() {
+
+        // show a dialog box to get more details about the event
+        // check that GPS is enabled.
+        LocationHelper lh = new LocationHelper(mContext,LocationManager.GPS_PROVIDER);
+        if (!lh.isProviderEnabled()) {
+            showAlertGPSIsDisbled();
+            //reset the slider to off position
+            MenuItem item = mMenu.findItem(R.id.mainslidealert);
+            Switch aswitch = (Switch) MenuItemCompat.getActionView(item);
+            aswitch.setChecked(false);
+            return;
+        }
+
+
+
+        //set event information on Parse
+        EventHelper.tellParseAlertIsOn();
+        // TODO: send out notifications to friends that alert is active
+
+        // setup a local notification, saying that location is being shared.
+        setOnGoingAlertNotification();
+        // start the alarm manager to retrieve location.
+        mMyAlarmManager.setRepeatingAlarm(60);
+        
+    }
+
+
+    private void showAlertGPSIsDisbled() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setMessage(R.string.gpsIsNotEnabledMessage);
+
+        builder.setPositiveButton(R.string.optionEnableGPS,new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent callGPSSettingIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                startActivity(callGPSSettingIntent);
+            }
+        });
+
+        builder.setNegativeButton(R.string.cancelEnablingGPS, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Log.i(LOGTAG, "Did not enable GPS. operation cancelled");
+
+            }
+        });
+        builder.show();
+    }
 
     public void setSpinnerMenu(ArrayList<String> options) {
         MenuItem item = mMenu.findItem(R.id.mainspinner);

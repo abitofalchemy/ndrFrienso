@@ -88,6 +88,11 @@
     <string name="cancelFriendModification">Cancel</string>
     <string name="longPressHint">Press and hold the row to make changes</string>
     <string name="pressRowToAddFriend">Press and Hold Row to add a friend</string>
+    <string name="gpsIsNotEnabledMessage">GPS is disable. For getting your accurate location, you must enable High Accuracy mode.</string>
+    <string name="cancelEnablingGPS">No</string>
+    <string name="optionEnableGPS">Enable GPS</string>
+    <string name="notification_alert_on">Tracking is On</string>
+    <string name="notification_text">Your location is shared with your friends</string>
     <string-array name="inFriendOperations">
         <item>Block</item>
         <item>Unblock</item>

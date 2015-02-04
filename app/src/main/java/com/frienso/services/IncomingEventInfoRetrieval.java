@@ -3,18 +3,15 @@ package com.frienso.services;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
-import com.frienso.android.application.Splash;
 import com.frienso.helper.ActiveIncomingEvent;
 import com.frienso.helper.EventHelper;
 import com.frienso.utils.DateTime;
-import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
@@ -77,8 +74,10 @@ public class IncomingEventInfoRetrieval extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        /*
         //this is needed if the service is restarted while in the background.
         Parse.initialize(mContext, Splash.PARSE_APPLICATION_ID, Splash.PARSE_CLIENT_KEY);
+        */
         //if there is no user logged in, then terminate
         if(ParseUser.getCurrentUser() == null) {
             stopSelf();
