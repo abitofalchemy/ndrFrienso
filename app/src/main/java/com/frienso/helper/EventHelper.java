@@ -8,6 +8,7 @@ import com.frienso.services.IncomingEventInfoRetrieval;
 import com.frienso.utils.DateTime;
 import com.parse.FindCallback;
 import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -119,13 +120,62 @@ public class EventHelper {
         }
         Log.i(LOG_TAG," sActiveIncoming Event Size " + sActiveIncomingEvents.size()  );
         if(sActiveIncomingEvents !=null && sActiveIncomingEvents.size() != 0){
+            //TODO: incomingEventInfoRetrival is a dead code. remove it.
             //start Service
-            startEventService();
-        }else {
-            stopEventService();
-        }
+           // startEventService();
+           fetchData();
+        }//else {
+           // stopEventService();
+      //  }
     }
 
+
+    /* This is the method that does all the heavy lifting
+ */
+    private static void fetchData () {
+
+        //update each user's active event separately .. finally we should do it all in one query
+        for (ActiveIncomingEvent ae : EventHelper.sActiveIncomingEvents) {
+            List<ParseObject> pofs;
+            ParseQuery<ParseObject> pq = ParseQuery.getQuery(ParseDataStructures.LOCATION_DATA_TABLE);
+            long timeStamp;
+            if(ae.mLocationArray.size()==0){
+                timeStamp = ae.createdAtInMillis - 1 ; //to get greater than equal to
+            } else {
+                timeStamp = (ae.mLocationArray.get(ae.mLocationArray.size() - 1)).timeStampInMillis;
+            }
+
+            //convert timeStamp into ISO format
+            String UTCtimeStamp = DateTime.getISO8601StringForTimeStampInMillis(timeStamp);
+
+            //TODO: uncomment the 3 lines below. Commented because data in parse is not correct
+            //pq.whereEqualTo("user",ae.mUser);
+            //pq.whereGreaterThan("createdAt",UTCtimeStamp);
+            //pq.orderByAscending("createdAt");
+
+            //TODO:remove the line below. This is to limit the output
+            pq.setLimit(50);
+
+            //query the data from Parse
+            try {
+                pofs =  pq.find();
+            } catch (ParseException e) {
+                e.printStackTrace();
+                pofs = null;
+            }
+
+            //iterate through the result one by one.
+            for (ParseObject pof : pofs ){
+                ParseGeoPoint pgp = (ParseGeoPoint) pof.get("location");
+                ae.addLocationEvent (pgp.getLatitude(),pgp.getLongitude(),(int)pof.get("accuracy"),
+                        (pof.getCreatedAt()).getTime());
+
+                Log.i(LOG_TAG, "Location Found - for : " + ae.mUser.getUsername() + " " +
+                        pgp.getLatitude() + " " + pgp.getLongitude() + " " + (int) pof.get("accuracy")
+                        + " " + (pof.getCreatedAt()).getTime());
+            }
+        }
+    }
 
     public static void startEventService () {
         Log.i(LOG_TAG,"Event Service Started");

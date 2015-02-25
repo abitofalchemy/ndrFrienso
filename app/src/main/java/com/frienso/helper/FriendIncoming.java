@@ -1,12 +1,6 @@
 package com.frienso.helper;
 
-import android.content.Context;
-
-import com.frienso.android.application.R;
 import com.parse.ParseUser;
-
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 
 /**
  * Created by udayan kumar on 11/12/14.
@@ -14,13 +8,13 @@ import java.util.ArrayList;
 public class FriendIncoming extends  Friend{
 
 
-    public FriendIncoming(ParseUser pu, String phoneNumber, String lname, String fname) {
-        super(pu,phoneNumber,lname,fname);
+    public FriendIncoming(ParseUser pu, String phoneNumber, String name) {
+        super(pu,phoneNumber,name);
     }
 
-    public boolean block() {
+    public void block(OperationComplete callback) {
         //TODO: implement this method
-        return true;
+
     }
 
 

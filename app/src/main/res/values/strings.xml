@@ -93,6 +93,8 @@
     <string name="optionEnableGPS">Enable GPS</string>
     <string name="notification_alert_on">Tracking is On</string>
     <string name="notification_text">Your location is shared with your friends</string>
+    <string name="user_not_on_frienso">User not on Frienso</string>
+    <string name="waitingForAction">Please wait while we are making the requested changes</string>
     <string-array name="inFriendOperations">
         <item>Block</item>
         <item>Unblock</item>
@@ -100,11 +102,16 @@
 
     <string-array name="outFriendOperations">
         <item>Remove</item>
-        <item>Replace</item>
     </string-array>
 
     <string-array name="onlyAddFriendOperation">
         <item>Add</item>
+    </string-array>
+
+
+    <string-array name="onlyInviteFriendOperation">
+        <item>Invite</item>
+        <item>Remove</item>
     </string-array>
 
 </resources>

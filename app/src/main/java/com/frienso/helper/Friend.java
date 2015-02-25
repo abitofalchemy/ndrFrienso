@@ -9,22 +9,28 @@ import com.parse.ParseUser;
  * Created by Udayan Kumar on 12/21/14.
  */
 public abstract class Friend {
-    private String phoneNumber;
-    private String lname;
-    private String fname;
+    protected String phoneNumber;
+    protected String name;
     private ParseUser pu;
     private String contactPicURI;
 
-    public Friend(ParseUser pu, String phoneNumber, String lname, String fname) {
-        this.lname = lname;
-        this.fname = fname;
+    public enum FriendOperationResult {
+        FAILURE, SUCCESS, NONETWORK, DUPLICATE, FriendNotFound, DUMMY
+    }
+
+    public interface OperationComplete {
+        void friendOperationComplete(FriendOperationResult val);
+    }
+
+    public Friend(ParseUser pu, String phoneNumber, String name) {
+
+        this.name = name;
         this.phoneNumber = phoneNumber;
         this.pu = pu;
         contactPicURI = null;
     }
     public Friend () {
-        this.lname = null;
-        this.fname = null;
+        this.name = null;
         this.phoneNumber = null;
         this.pu = null;
         contactPicURI = null;
@@ -37,18 +43,16 @@ public abstract class Friend {
         return contactPicURI;
     }
 
-    /* Since contacts api do not provide first name and last name,
-    we are only storing name info in fname. May be we can remove lname.
-     */
 
-    public void setFName(String fname) {
-        this.fname = fname;
+
+    public void setName(String name) {
+        this.name = name;
     }
 
 
 
     public void loadContactInfo(Context context) {
-        if(fname != null && lname != null)
+        if(name != null)
              return;
         ContactsHelper.getContactName(context,this);
     }
@@ -60,13 +64,10 @@ public abstract class Friend {
     public ParseUser getParseUser() { return pu;};
 
     public String getFullName(Context context) {
-        if(fname != null && lname!= null) {
-            return fname + " " + lname;
-        } else if(fname == null && lname == null) {
-            return context.getString(R.string.contactNameNotFound);
+        if(name != null) {
+            return name;
         } else {
-            //atleast one of them is null
-            return fname == null?lname:fname;
+            return context.getString(R.string.contactNameNotFound);
         }
     }
 

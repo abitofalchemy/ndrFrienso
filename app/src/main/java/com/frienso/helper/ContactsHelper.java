@@ -1,7 +1,6 @@
 package com.frienso.helper;
 
 import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
@@ -39,7 +38,7 @@ public class ContactsHelper {
             photoUri = cursor.getString(cursor.getColumnIndex(ContactsContract.PhoneLookup.PHOTO_THUMBNAIL_URI));
             //set the links back to the friend object.
             friend.setContactPicURI(photoUri);
-            friend.setFName(contactName);
+            friend.setName(contactName);
 
             Log.v(LOG_TAG, "Started uploadcontactphoto: Contact Found @ " + contactName);
             Log.v(LOG_TAG, "Started uploadcontactphoto: Contact Found @ " + phoneNumber);

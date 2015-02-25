@@ -40,4 +40,16 @@
         android:textSize="16sp" />
 
 
+    <TextView
+        android:id="@+id/outFriendNotOnFrienso"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_above="@id/outFriendSecondLine"
+        android:layout_alignWithParentIfMissing="true"
+        android:gravity="center_vertical"
+        android:text="@string/user_not_on_frienso"
+        android:textSize="12sp"
+        />
+
 </RelativeLayout>
