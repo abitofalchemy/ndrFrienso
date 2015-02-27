@@ -62,6 +62,7 @@ public class Splash extends Activity {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
                 Log.i(LOGTAG, "Login results successful, start the main activity");
+                startMainActivity();
             } else {
                 finish();
             }

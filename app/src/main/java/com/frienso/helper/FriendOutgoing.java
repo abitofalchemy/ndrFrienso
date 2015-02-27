@@ -79,7 +79,9 @@ public class FriendOutgoing extends Friend{
                         pacl.setPublicReadAccess(false);
                         pacl.setPublicWriteAccess(false);
                         pacl.setWriteAccess(ParseUser.getCurrentUser(),true);
+                        pacl.setReadAccess(ParseUser.getCurrentUser(),true);
                         pacl.setWriteAccess(pu,true);
+                        pacl.setReadAccess(pu,true);
                         newFriend.setACL(pacl);
 
                         newFriend.saveInBackground(new SaveCallback() {

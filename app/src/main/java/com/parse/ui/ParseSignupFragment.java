@@ -32,10 +32,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.frienso.android.application.R;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
-import com.frienso.android.application.R;
 
 /**
  * Fragment for the user signup screen.
@@ -49,6 +49,7 @@ public class ParseSignupFragment extends ParseLoginFragmentBase implements OnCli
   private EditText confirmPasswordField;
   private EditText emailField;
   private EditText nameField;
+  private EditText phoneNumber;
   private Button createAccountButton;
   private ParseOnLoginSuccessListener onLoginSuccessListener;
 
@@ -58,8 +59,10 @@ public class ParseSignupFragment extends ParseLoginFragmentBase implements OnCli
   private static final String LOG_TAG = "ParseSignupFragment";
   private static final int DEFAULT_MIN_PASSWORD_LENGTH = 6;
   private static final String USER_OBJECT_NAME_FIELD = "name";
+    private static final String USER_OBJECT_PHONENUMBER_FIELD = "phoneNumber";
 
-  public static ParseSignupFragment newInstance(Bundle configOptions, String username, String password) {
+
+    public static ParseSignupFragment newInstance(Bundle configOptions, String username, String password) {
     ParseSignupFragment signupFragment = new ParseSignupFragment();
     Bundle args = new Bundle(configOptions);
     args.putString(ParseSignupFragment.USERNAME, username);
@@ -92,6 +95,7 @@ public class ParseSignupFragment extends ParseLoginFragmentBase implements OnCli
         .findViewById(R.id.signup_confirm_password_input);
     emailField = (EditText) v.findViewById(R.id.signup_email_input);
     nameField = (EditText) v.findViewById(R.id.signup_name_input);
+    phoneNumber = (EditText) v.findViewById(R.id.signup_phone_input);
     createAccountButton = (Button) v.findViewById(R.id.create_account);
 
     usernameField.setText(username);
@@ -140,6 +144,7 @@ public class ParseSignupFragment extends ParseLoginFragmentBase implements OnCli
     String username = usernameField.getText().toString();
     String password = passwordField.getText().toString();
     String passwordAgain = confirmPasswordField.getText().toString();
+    String phone = phoneNumber.getText().toString();
 
     String email = null;
     if (config.isParseLoginEmailAsUsername()) {
@@ -171,7 +176,10 @@ public class ParseSignupFragment extends ParseLoginFragmentBase implements OnCli
       showToast(R.string.com_parse_ui_no_email_toast);
     } else if (name != null && name.length() == 0) {
       showToast(R.string.com_parse_ui_no_name_toast);
-    } else {
+    } else if (phone.length() < 10) {
+        showToast(R.string.com_parse_ui_no_phone_toast);
+    }
+    else {
       ParseUser user = new ParseUser();
 
       // Set standard fields
@@ -182,6 +190,10 @@ public class ParseSignupFragment extends ParseLoginFragmentBase implements OnCli
       // Set additional custom fields only if the user filled it out
       if (name.length() != 0) {
         user.put(USER_OBJECT_NAME_FIELD, name);
+      }
+
+      if (phone.length() > 9) {
+          user.put(USER_OBJECT_PHONENUMBER_FIELD,phone);
       }
 
       loadingStart();

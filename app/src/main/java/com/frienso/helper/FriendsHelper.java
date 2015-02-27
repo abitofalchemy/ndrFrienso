@@ -158,6 +158,7 @@ public class FriendsHelper {
             pq.include("sender");
             try {
                 pofs =  pq.find();
+                Log.i(LOG_TAG,"Number of incoming friends : "+ pofs.size());
             } catch (ParseException e) {
                 e.printStackTrace();
                 return fil;

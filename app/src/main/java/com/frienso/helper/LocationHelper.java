@@ -130,6 +130,8 @@ public class LocationHelper implements LocationListener {
         if(isBetterLocation(location,mCurrentBestLocation)) {
             mCurrentBestLocation = location;
         }
+        Log.i(LOG_TAG, " Location is " + location.getLatitude() + " " + location.getLongitude() + " " + location.getAccuracy());
+
 
         //if there is no user logged in, then terminate
         if(ParseUser.getCurrentUser() != null) {
@@ -160,7 +162,6 @@ public class LocationHelper implements LocationListener {
                     }
                 }
             });
-            Log.i(LOG_TAG, " Location is " + location.getLatitude() + " " + location.getLongitude() + " " + location.getAccuracy());
 
         }
 

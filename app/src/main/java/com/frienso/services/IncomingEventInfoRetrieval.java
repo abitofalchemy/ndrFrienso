@@ -105,9 +105,9 @@ public class IncomingEventInfoRetrieval extends Service {
             String UTCtimeStamp = DateTime.getISO8601StringForTimeStampInMillis(timeStamp);
 
             //TODO: uncomment the 3 lines below. Commented because data in parse is not correct
-            //pq.whereEqualTo("user",ae.mUser);
-            //pq.whereGreaterThan("createdAt",UTCtimeStamp);
-            //pq.orderByAscending("createdAt");
+            pq.whereEqualTo("user",ae.mUser);
+            pq.whereGreaterThan("createdAt",UTCtimeStamp);
+            pq.orderByAscending("createdAt");
 
             //TODO:remove the line below. This is to limit the output
             pq.setLimit(50);
