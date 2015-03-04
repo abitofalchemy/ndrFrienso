@@ -1,4 +1,4 @@
-package com.frienso.utils;
+package com.frienso.android.utils;
 
 /**
  * Created by udayan on 2/22/15.

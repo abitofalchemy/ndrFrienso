@@ -1,6 +1,5 @@
-package com.frienso.helper;
+package com.frienso.android.helper;
 
-import com.parse.Parse;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package com.frienso.helper;
+package com.frienso.android.helper;
 
 import android.content.Context;
 import android.location.Location;
@@ -141,7 +141,7 @@ public class LocationHelper implements LocationListener {
             po.put("location", pgp);
             po.put("user", ParseUser.getCurrentUser());
             po.put("provider", mLocationProvider);
-            po.put("accuracy",location.getAccuracy());
+            po.put("accuracy",Math.round(location.getAccuracy()));
 
             //set ACL only to the friends
 

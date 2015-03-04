@@ -1,11 +1,11 @@
-package com.frienso.helper;
+package com.frienso.android.helper;
 
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.frienso.services.IncomingEventInfoRetrieval;
-import com.frienso.utils.DateTime;
+import com.frienso.android.services.IncomingEventInfoRetrieval;
+import com.frienso.android.utils.DateTime;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
@@ -71,15 +71,13 @@ public class EventHelper {
                 ParseQuery<ParseObject> pq = ParseQuery.getQuery(EVENT_TABLE);
                 pq.whereEqualTo("friensoUser", singleFriend.getParseUser());
                 Log.i(LOG_TAG, "friends searching for " + singleFriend.getParseUser());
-                //TODO: do we need the below check?
-                pq.whereLessThan("createdAt", currentTimeinISO);
-                //TODO: Enable this is in the prod version
-                //pq.whereEqualTo("eventActive","true");
-                pq.whereDoesNotExist("endDateTime");
+                pq.whereEqualTo("eventActive",true);
+              //  pq.whereDoesNotExist("overAt");
                 lpq.add(pq);
             }
             //combine all the queries here and send only one request to Parse.
             ParseQuery<ParseObject> superQuery = ParseQuery.or(lpq);
+            superQuery.orderByDescending("createdAt");
             try {
                 pos = superQuery.find();
             } catch (ParseException e) {
@@ -91,6 +89,9 @@ public class EventHelper {
             //now parse the returned result to create different Active Events that
             // can be later reused.
 
+            //This arrayList will copy all the active events data from existing list and include new events
+            // then these lists are swapped so that inactive events are removed.
+            ArrayList<ActiveIncomingEvent>  currentlyActiveEvents = new ArrayList<ActiveIncomingEvent>();
             for (ParseObject po : pos) {
                 Log.i(LOG_TAG, "Event User found " + po.get("friensoUser"));
                 ParseUser pu = (ParseUser) po.get("friensoUser");
@@ -101,21 +102,33 @@ public class EventHelper {
                     e.printStackTrace();
                 }
 
-                ActiveIncomingEvent av = new ActiveIncomingEvent(pu, (po.getCreatedAt()).getTime());
                 if (sActiveIncomingEvents == null) {
                     sActiveIncomingEvents = new ArrayList<ActiveIncomingEvent>();
                 }
                 //check if av user already exists then ignore else add
+
+
                 boolean matchFound = false;
                 for (ActiveIncomingEvent ae : sActiveIncomingEvents) {
-                    if (ae.sameUser(pu))
+                    if (ae.sameUser(pu)) {
                         matchFound = true;
+                        //it does not exists in the new arraylist
+                        if(!exists(currentlyActiveEvents,pu)) {
+                            currentlyActiveEvents.add(ae);
+                        }
+                    }
                 }
                 if (!matchFound) {
-                    sActiveIncomingEvents.add(av);
+                    if(!exists(currentlyActiveEvents,pu)) {
+                        ActiveIncomingEvent av = new ActiveIncomingEvent(pu, (po.getCreatedAt()).getTime());
+                        currentlyActiveEvents.add(av);
+                    }
                 }
 
             }
+            //swapping out the old elements. GC GC GC GC!!!
+            sActiveIncomingEvents = currentlyActiveEvents;
+            Log.i(LOG_TAG," currently Active Event Size " + currentlyActiveEvents.size()  );
 
         }
         Log.i(LOG_TAG," sActiveIncoming Event Size " + sActiveIncomingEvents.size()  );
@@ -130,11 +143,23 @@ public class EventHelper {
     }
 
 
+    private static boolean exists(ArrayList<ActiveIncomingEvent> list, ParseUser pu) {
+
+        for (ActiveIncomingEvent ae: list) {
+            if(ae.sameUser(pu)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
     /* This is the method that does all the heavy lifting
  */
     private static void fetchData () {
 
-        //update each user's active event separately .. finally we should do it all in one query
+        //update each user's active event separately .. TODO: finally we should do it all in one query
         for (ActiveIncomingEvent ae : EventHelper.sActiveIncomingEvents) {
             List<ParseObject> pofs;
             ParseQuery<ParseObject> pq = ParseQuery.getQuery(ParseDataStructures.LOCATION_DATA_TABLE);
@@ -148,13 +173,12 @@ public class EventHelper {
             //convert timeStamp into ISO format
             String UTCtimeStamp = DateTime.getISO8601StringForTimeStampInMillis(timeStamp);
 
-            //TODO: uncomment the 3 lines below. Commented because data in parse is not correct
-            //pq.whereEqualTo("user",ae.mUser);
-            //pq.whereGreaterThan("createdAt",UTCtimeStamp);
-            //pq.orderByAscending("createdAt");
+            pq.whereEqualTo("user",ae.mUser);
+            pq.whereGreaterThan("createdAt",UTCtimeStamp);
+            pq.orderByAscending("createdAt");
 
             //TODO:remove the line below. This is to limit the output
-            pq.setLimit(50);
+           // pq.setLimit(50);
 
             //query the data from Parse
             try {
@@ -171,7 +195,7 @@ public class EventHelper {
                         (pof.getCreatedAt()).getTime());
 
                 Log.i(LOG_TAG, "Location Found - for : " + ae.mUser.getUsername() + " " +
-                        pgp.getLatitude() + " " + pgp.getLongitude() + " " + (int) pof.get("accuracy")
+                        pgp.getLatitude() + " " + pgp.getLongitude() + " " +(int) pof.get("accuracy")
                         + " " + (pof.getCreatedAt()).getTime());
             }
         }

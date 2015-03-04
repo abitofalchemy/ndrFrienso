@@ -1,10 +1,8 @@
-package com.frienso.helper;
+package com.frienso.android.helper;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 
-import com.frienso.android.application.MainActivity;
 import com.frienso.android.application.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -41,12 +39,15 @@ public class MapHelper {
         ArrayList<SingleLocationEvent> locations = getUserLocationArray(mUsernameOnMap);
         if(locations == null)
             return;
-
+        mGoogleMap.clear();
+        //TODO: for better memory efficiency we should avoid using clear and reset the data in the map objects.
         PolylineOptions plo = createPolyline(locations);
         // Get back the mutable Polyline
         Polyline polyline = mGoogleMap.addPolyline(plo);
         mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(getNewLatLngBounds(plo.getPoints()),
                 widthBoundingBox, heightBoundingBox, paddingBoundingBox));
+        //remove existing markers
+
         //Start Marker
         mGoogleMap.addMarker(new MarkerOptions()
                 .position(plo.getPoints().get(0))

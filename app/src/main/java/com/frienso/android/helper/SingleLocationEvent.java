@@ -1,4 +1,4 @@
-package com.frienso.helper;
+package com.frienso.android.helper;
 
 /**
  * Created by udayan Kumar on 11/23/14.

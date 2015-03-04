@@ -1,4 +1,4 @@
-package com.frienso.services;
+package com.frienso.android.services;
 
 import android.app.Service;
 import android.content.Context;
@@ -9,9 +9,9 @@ import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
-import com.frienso.helper.ActiveIncomingEvent;
-import com.frienso.helper.EventHelper;
-import com.frienso.utils.DateTime;
+import com.frienso.android.helper.ActiveIncomingEvent;
+import com.frienso.android.helper.EventHelper;
+import com.frienso.android.utils.DateTime;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;

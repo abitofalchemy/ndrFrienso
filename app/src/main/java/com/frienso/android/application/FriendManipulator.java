@@ -19,13 +19,13 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.frienso.adapters.IncomingFriendsListViewAdapter;
-import com.frienso.adapters.OutgoingFriendsListViewAdapter;
-import com.frienso.helper.Friend;
-import com.frienso.helper.FriendIncoming;
-import com.frienso.helper.FriendOutgoing;
-import com.frienso.helper.FriendsHelper;
-import com.frienso.utils.PhoneNumbers;
+import com.frienso.android.adapters.IncomingFriendsListViewAdapter;
+import com.frienso.android.adapters.OutgoingFriendsListViewAdapter;
+import com.frienso.android.helper.Friend;
+import com.frienso.android.helper.FriendIncoming;
+import com.frienso.android.helper.FriendOutgoing;
+import com.frienso.android.helper.FriendsHelper;
+import com.frienso.android.utils.PhoneNumbers;
 
 import java.util.ArrayList;
 

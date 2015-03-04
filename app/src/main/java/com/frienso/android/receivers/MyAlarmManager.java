@@ -1,4 +1,4 @@
-package com.frienso.receivers;
+package com.frienso.android.receivers;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -8,7 +8,7 @@ import android.content.Intent;
 import android.location.LocationManager;
 import android.widget.Toast;
 
-import com.frienso.helper.LocationHelper;
+import com.frienso.android.helper.LocationHelper;
 
 /**
  * Created by udayan kumar on 1/19/15.

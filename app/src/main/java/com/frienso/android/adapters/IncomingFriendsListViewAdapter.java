@@ -1,4 +1,4 @@
-package com.frienso.adapters;
+package com.frienso.android.adapters;
 
 import android.content.Context;
 import android.net.Uri;
@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.frienso.android.application.R;
-import com.frienso.helper.FriendIncoming;
+import com.frienso.android.helper.FriendIncoming;
 
 /**
  * Created by Udayan Kumar on 12/20/14.

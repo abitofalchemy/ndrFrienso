@@ -1,4 +1,4 @@
-package com.frienso.helper;
+package com.frienso.android.helper;
 
 import android.content.Context;
 

@@ -26,13 +26,13 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
 
-import com.frienso.helper.EventHelper;
-import com.frienso.helper.FriendIncoming;
-import com.frienso.helper.FriendsHelper;
-import com.frienso.helper.LocationHelper;
-import com.frienso.helper.MapHelper;
-import com.frienso.receivers.MyAlarmManager;
-import com.frienso.utils.Network;
+import com.frienso.android.helper.EventHelper;
+import com.frienso.android.helper.FriendIncoming;
+import com.frienso.android.helper.FriendsHelper;
+import com.frienso.android.helper.LocationHelper;
+import com.frienso.android.helper.MapHelper;
+import com.frienso.android.receivers.MyAlarmManager;
+import com.frienso.android.utils.Network;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -205,11 +205,11 @@ public class MainActivity extends Activity implements  OnMapReadyCallback {
             return;
         }
 
-
-
         //set event information on Parse
         EventHelper.tellParseAlertIsOn();
         // TODO: send out notifications to friends that alert is active
+
+
 
         // setup a local notification, saying that location is being shared.
         setOnGoingAlertNotification();

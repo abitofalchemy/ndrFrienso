@@ -1,4 +1,4 @@
-package com.frienso.utils;
+package com.frienso.android.utils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
