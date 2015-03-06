@@ -1,0 +1,14 @@
+{
+    "applications": {
+        "_default": {
+            "link": "frienso"
+        }, 
+        "frienso": {
+            "applicationId": "ocxutehzKxd4EvmeODaNDl8AwJPYajzTK06QYkzZ", 
+            "masterKey": "bpRWehImEMoJCaAi6Xj06Wsc5EUfj0DV00LHlq5y"
+        }
+    }, 
+    "global": {
+        "parseVersion": "1.3.5"
+    }
+}

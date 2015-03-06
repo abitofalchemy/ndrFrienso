@@ -96,6 +96,7 @@
     <string name="notification_text">Your location is shared with your friends</string>
     <string name="user_not_on_frienso">User not on Frienso</string>
     <string name="waitingForAction">Please wait while we are making the requested changes</string>
+    <string name="trackingStartNotificationMessage">Track</string>
     <string-array name="inFriendOperations">
         <item>Block</item>
         <item>Unblock</item>

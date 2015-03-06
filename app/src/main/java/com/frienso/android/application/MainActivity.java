@@ -36,8 +36,13 @@ import com.frienso.android.utils.Network;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.parse.FunctionCallback;
+import com.parse.ParseCloud;
+import com.parse.ParseException;
+import com.parse.ParseUser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MainActivity extends Activity implements  OnMapReadyCallback {
 
@@ -209,7 +214,20 @@ public class MainActivity extends Activity implements  OnMapReadyCallback {
         EventHelper.tellParseAlertIsOn();
         // TODO: send out notifications to friends that alert is active
 
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("title", mContext.getString(R.string.trackingStartNotificationMessage) + " " + ParseUser.getCurrentUser().get("name"));
+        params.put("message", "Quick brown fox jumped over the lazy dog");
+        ParseCloud.callFunctionInBackground("sendTrackEventStartNotification", params, new FunctionCallback<String>() {
 
+            @Override
+            public void done(String s, ParseException e) {
+                if (e == null) {
+                    Log.i(LOGTAG,"push message successful");
+                } else {
+                    Log.e(LOGTAG,"Push message failed" + e.getMessage());
+                }
+            }
+        });
 
         // setup a local notification, saying that location is being shared.
         setOnGoingAlertNotification();

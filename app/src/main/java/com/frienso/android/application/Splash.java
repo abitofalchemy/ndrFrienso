@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.Window;
 
+import com.frienso.android.helper.SubscribePushNotification;
 import com.parse.ParseUser;
 import com.parse.ui.ParseLoginBuilder;
 
@@ -62,6 +63,7 @@ public class Splash extends Activity {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
                 Log.i(LOGTAG, "Login results successful, start the main activity");
+                SubscribePushNotification.subscribe();
                 startMainActivity();
             } else {
                 finish();
