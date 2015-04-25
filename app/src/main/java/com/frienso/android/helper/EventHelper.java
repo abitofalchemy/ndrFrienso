@@ -241,4 +241,18 @@ public class EventHelper {
         });
 
     }
+
+    /**
+     * Use this method to find if a particualr user identified by phoneNumber is having an active event
+     * @param usersPhoneNumber - user's phonenumber to search with
+     * @return
+     */
+    public static boolean hasActiveEvent(String usersPhoneNumber) {
+        for (ActiveIncomingEvent aie: EventHelper.sActiveIncomingEvents){
+            //TODO: Change this if the phone number is no longer the identity of the user
+            if (aie.mUser.get("phoneNumber").toString().compareTo(usersPhoneNumber) == 0)
+                return true;
+        }
+        return false;
+    }
 }

@@ -47,7 +47,13 @@ public class OutgoingFriendsListViewAdapter extends ArrayAdapter<FriendOutgoing>
             secondLine.setText("");
             userNotOnFriensoLine.setVisibility(View.INVISIBLE);
         } else {
-            firstLine.setText(values.get(position).getFullName(mContext));
+
+            if (values.get(position).getFullName(mContext) == null) {
+                firstLine.setText(mContext.getString(R.string.contactNameNotFound));
+            } else {
+                firstLine.setText(values.get(position).getFullName(mContext));
+            }
+
             secondLine.setText(values.get(position).getNumber());
             String imageUri = values.get(position).getPicURI();
             if (imageUri != null) {

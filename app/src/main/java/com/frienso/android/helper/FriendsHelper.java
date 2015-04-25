@@ -80,6 +80,14 @@ public class FriendsHelper {
         }
     }
 
+    public static FriendIncoming findIncomingFriend(String phoneNumber) {
+        for (FriendIncoming fi: sFriendIncoming){
+            if(fi.getNumber().compareTo(phoneNumber) ==0)
+                return fi;
+        }
+        return null;
+    }
+
     /*disallow a user from sending any more updates in the future*/
 
     public static void blockFriend(FriendIncoming fi, Friend.OperationComplete callback) {
@@ -140,7 +148,7 @@ public class FriendsHelper {
                 Log.i(LOG_TAG, "Outgoing friend - phone:" + phoneNumber);
 
                 // we used this constructor since the user is on parse and added
-                FriendOutgoing  fo = new FriendOutgoing(null,phoneNumber,name,false);
+                FriendOutgoing  fo = new FriendOutgoing(null,phoneNumber,null,false);
                 fol.add(fo);
             }
 
@@ -173,7 +181,7 @@ public class FriendsHelper {
                 Log.i(LOG_TAG,"Incoming friend - email:"+(String)pu.getEmail());
 
                 // we used this constructor since the user is on parse and added
-                FriendIncoming  fi = new FriendIncoming(pu,phoneNumber,name);
+                FriendIncoming  fi = new FriendIncoming(pu,phoneNumber,null);
                 fil.add(fi);
             }
 
@@ -257,5 +265,42 @@ public class FriendsHelper {
         for (Friend fo : sFriendOutgoing){
             fo.loadContactInfo(mContext);
         }
+    }
+
+    /**
+     *
+     * @param name  @param name - this is the contact name whose number we want
+     * @param context
+     * @return number is found else null
+     */
+    public static String getNumberFromNameIncomingFriends(String name,Context context) {
+        if (name == null) {
+            return null;
+        }
+        for (FriendIncoming fi: sFriendIncoming){
+            if(fi.getFullName(context) == null)
+                continue;
+            if (name.compareTo(fi.getFullName(context)) == 0)
+                return fi.getNumber();
+        }
+        return null;
+    }
+    /**
+     *
+     * @param number  @param name - this is the contact whose number we want
+     * @param context
+     * @return number is found else null
+     */
+    public static String getNameFromNumberIncomingFriends(String number,Context context) {
+        if (number == null) {
+            return null;
+        }
+        for (FriendIncoming fi: sFriendIncoming){
+            if(fi.getNumber()==null)
+                continue;
+            if (number.compareTo(fi.getNumber()) == 0)
+                return fi.getFullName(context);
+        }
+        return null;
     }
 }

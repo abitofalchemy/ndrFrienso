@@ -50,4 +50,28 @@ public class ContactsHelper {
             cursor.close();
         }
     }
-}
+
+    public static String getContactName(Context context, String phoneNumber) {
+        if (phoneNumber == null) {
+            return null;
+        }
+        ContentResolver cr = context.getContentResolver();
+        Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phoneNumber));
+        Cursor cursor = cr.query(uri, projection, null, null, null);
+        if (cursor == null) {
+            Log.e(LOG_TAG, "Cursor is null");
+            return null;
+        }
+        String contactName = null;
+        String photoUri = null;
+        if (cursor.moveToFirst()) {
+            contactName = cursor.getString(cursor.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME));
+        }
+
+        if (cursor != null && !cursor.isClosed()) {
+            cursor.close();
+        }
+
+        return contactName;
+    }
+    }

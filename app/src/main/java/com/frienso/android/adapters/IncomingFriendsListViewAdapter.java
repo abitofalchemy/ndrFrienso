@@ -34,7 +34,11 @@ public class IncomingFriendsListViewAdapter extends ArrayAdapter<FriendIncoming>
         TextView secondLine = (TextView) rowView.findViewById(R.id.inFriendSecondLine);
         ImageView imageView = (ImageView) rowView.findViewById(R.id.inFriendPhotoIcon);
 
-        firstLine.setText(values[position].getFullName(mContext));
+        if (values[position].getFullName(mContext) == null) {
+            firstLine.setText(mContext.getString(R.string.contactNameNotFound));
+        } else {
+            firstLine.setText(values[position].getFullName(mContext));
+        }
         secondLine.setText(values[position].getNumber());
 
         String imageUri = values[position].getPicURI();

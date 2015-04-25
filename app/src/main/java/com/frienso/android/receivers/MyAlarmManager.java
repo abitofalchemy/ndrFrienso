@@ -26,6 +26,9 @@ public class MyAlarmManager extends BroadcastReceiver{
 
     public void setRepeatingAlarm(int timeoutInSeconds) {
 
+        if(isAlarmSet())
+            cancelAlarm();
+
         AlarmManager alarmMgr =
                 (AlarmManager)mContext.getSystemService(Context.ALARM_SERVICE);
         PendingIntent pendingIntent =

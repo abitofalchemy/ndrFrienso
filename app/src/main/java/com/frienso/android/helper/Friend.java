@@ -2,7 +2,6 @@ package com.frienso.android.helper;
 
 import android.content.Context;
 
-import com.frienso.android.application.R;
 import com.parse.ParseUser;
 
 /**
@@ -13,6 +12,8 @@ public abstract class Friend {
     protected String name;
     private ParseUser pu;
     private String contactPicURI;
+
+
 
     public enum FriendOperationResult {
         FAILURE, SUCCESS, NONETWORK, DUPLICATE, FriendNotFound, DUMMY
@@ -52,8 +53,6 @@ public abstract class Friend {
 
 
     public void loadContactInfo(Context context) {
-        if(name != null)
-             return;
         ContactsHelper.getContactName(context,this);
     }
 
@@ -64,11 +63,10 @@ public abstract class Friend {
     public ParseUser getParseUser() { return pu;};
 
     public String getFullName(Context context) {
-        if(name != null) {
-            return name;
-        } else {
-            return context.getString(R.string.contactNameNotFound);
+        if(name == null) {
+            loadContactInfo(context);
         }
+        return name;
     }
 
 }

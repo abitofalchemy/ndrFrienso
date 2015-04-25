@@ -10,6 +10,7 @@ Parse.Cloud.define("sendTrackEventStartNotification", function(request, response
   var recipientUserId = request.params.recipientId;
   var message = request.params.message;
   var msgTitle = request.params.title;
+  var phoneNumberSender = senderUser.get("phoneNumber");
 
   var query = new Parse.Query("CoreFriendRequest");
   query.equalTo("sender",senderUser);
@@ -28,7 +29,9 @@ Parse.Cloud.define("sendTrackEventStartNotification", function(request, response
              channels: channelArray,
              data: {
                  alert:message,
-                 title:msgTitle
+                 title:msgTitle,
+                 phoneNumber:phoneNumberSender,
+                 msgType:"TrackAlert"
              }
       }).then(function() {
       response.success("Pusyyh was sent successfully.")
